@@ -22,8 +22,7 @@ class AdminMjifirmainvoiceController extends ModuleAdminController
             $this->id_order = Tools::getValue('id_order');
             $this->kind = Tools::getValue('kind');
             
-            $this->bootstrap = true;
-            parent::__construct();
+            
             
             if ($this->kind == 'vat') {
                 $order = new Order($this->id_order);
@@ -34,7 +33,12 @@ class AdminMjifirmainvoiceController extends ModuleAdminController
                 $order = new Order($this->id_order);
                 return (new Mjifirma())->sendPv($order);
             }
-            
+            if (Tools::getValue('show') == '1') {
+                header("Content-type:application/pdf");
+                return (new Mjifirma())->getInvoiceApi($this->id_order);
+            }
+            $this->bootstrap = true;
+            parent::__construct();
         }
     }
 }

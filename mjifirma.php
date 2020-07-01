@@ -97,7 +97,7 @@ class Mjifirma extends Module
                "name" => "ELE – płatność elektroniczna",
                 )
         );
-        $this->termin_platnosci = strtotime("+7 day", date('Y-m-d'));
+        $this->termin_platnosci = date('Y-m-d', strtotime("+7 day"));
         if (Tools::getValue('id_order')) {
             $order = new Order(Tools::getValue('id_order'));
             $this->sposob_zaplaty = (Mjifirma::getPaymentid($order->module) != '') ? Configuration::get($this->prefix . 'payment_option_'.Mjifirma::getPaymentid($order->module)) : "PRZ";
@@ -296,7 +296,7 @@ class Mjifirma extends Module
 
         $api_key = array();
         $part_key = '';
-        for($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura'));$i++) {
+        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura'));$i++) {
             $part_key .= Configuration::get($this->prefix.'klucz_api_faktura')[$i];
             if ((($i%2) == 1) && ($i != 0)) {
                 $api_key[] = $part_key;
@@ -314,13 +314,14 @@ class Mjifirma extends Module
         );
         
         $response = json_decode($this->makeRequest($url, $headers, "POST", $requestContent), true);
-        if ($response['Kod'] == '201') {
-            echo $response['Informacja'];
+        if ($response["response"]['Kod'] == '201') {
+            echo $response["response"]['Informacja'];
             exit();
         } else {
-            $this->dodajFakture($order->id, null, $response['Identyfikator'], 'fv');
+            $this->dodajFakture($order->id, null, $response["response"]['Identyfikator'], 'fv');
         
-            return $this->displayConfirmation($this->l('Saved successfully'));
+            $link = new Link();
+            return $link->getLegacyAdminLink("AdminOrders",true,['vieworder'=>'','id_order'=>$order->id]);
         }
     }
 
@@ -331,8 +332,8 @@ class Mjifirma extends Module
      */
    public static function getPaymentid($payment_name)
     {
-       $sql = "SELECT * FROM "._DB_PREFIX_."modules WHERE name = '".pSQL($payment_name)."' LIMIT 1";
-       if(count(DB::getInstance()->ExecuteS($sql, 1, 0)) > 0) {
+       $sql = "SELECT * FROM "._DB_PREFIX_."module WHERE name = '".pSQL($payment_name)."' LIMIT 1";
+       if (count(DB::getInstance()->ExecuteS($sql, 1, 0)) > 0) {
            return DB::getInstance()->ExecuteS($sql, 1, 0)[0]['id_module'];
        } else {
            return false;
@@ -358,14 +359,58 @@ class Mjifirma extends Module
             $this->context->smarty->assign(array(
                 'invoice' => '',
                 'pf' => '',
-                'single_invoice' => '',//count($invoice) > 0 ? $invoice[0] : $invoice,
+                'single_invoice' => $this->getInvoice($order_id),
                 'id_order' => $order_id,
-                'invoice_url' => '',//$this->getInvoicesurl($this->account_prefix),
                 'default_language' => (int) Configuration::get('PS_LANG_DEFAULT'),
                 'order_product' => $order->getCustomer()
             ));
             return $this->display(__file__, '/views/templates/admin/displayAdminOrder.tpl');
         }
+    }
+    /**
+     * Wyświetlenie fv z ifirma
+     * @param type $id_order
+     * @return type
+     */
+    public function getInvoiceApi($id_order)
+    {
+        //https://www.ifirma.pl/iapi/fakturakraj/1244521.xml
+        $nazwaUsera = Configuration::get($this->prefix.'login');
+        $nazwaKlucza = 'faktura';
+        $requestContent='';
+        $url = "https://www.ifirma.pl/iapi/fakturakraj/".$this->getInvoice($id_order)[0]['id_fv'].".pdf.single";
+
+        $api_key = array();
+        $part_key = '';
+        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura'));$i++) {
+            $part_key .= Configuration::get($this->prefix.'klucz_api_faktura')[$i];
+            if ((($i%2) == 1) && ($i != 0)) {
+                $api_key[] = $part_key;
+                $part_key = '';
+            }
+        }
+
+        $klucz = chr(hexdec($api_key[0])).chr(hexdec($api_key[1])).chr(hexdec($api_key[2])).chr(hexdec($api_key[3])).chr(hexdec($api_key[4])).chr(hexdec($api_key[5])).chr(hexdec($api_key[6])).chr(hexdec($api_key[7]));
+
+        $hashWiadomosci = hash_hmac('sha1', $url.$nazwaUsera.$nazwaKlucza.$requestContent, $klucz);
+        $headers = array(
+            'Accept: application/pdf',
+            'Content-type: application/pdf; charset = UTF-8',
+            'Authentication: IAPIS user='.$nazwaUsera.', hmac-sha1='.$hashWiadomosci
+         );
+        echo $this->makeRequest($url, $headers, "GET", $requestContent);
+        exit();
+    }
+
+    /**
+     * Pobierz Fv
+     * @param type $id_order
+     * @return type
+     */
+    public function getInvoice($id_order)
+    {
+        $sql = "SELECT * FROM "._DB_PREFIX_."mjifirma_invoice WHERE id_order = '".pSQL($id_order)."'";
+        return DB::getInstance()->ExecuteS($sql, 1, 0);
     }
     /**
      * Odsintalowywanie
@@ -564,7 +609,7 @@ class Mjifirma extends Module
 
         $api_key = array();
         $part_key = '';
-        for($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_abonament'));$i++) {
+        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_abonament'));$i++) {
             $part_key .= Configuration::get($this->prefix.'klucz_api_abonament')[$i];
             if ((($i%2) == 1) && ($i != 0)) {
                 $api_key[] = $part_key;
