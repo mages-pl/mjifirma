@@ -199,7 +199,7 @@ class Mjifirma extends Module
     {
     }
     /**
-     * Wysyłka 
+     * Wysyłka
      * @param type $order
      * @return type
      */
@@ -219,7 +219,7 @@ class Mjifirma extends Module
         
         $dt = 0;
         $tax_rate = 0;
-        foreach($order->getProducts() as $product) {
+        foreach ($order->getProducts() as $product) {
             $separator = ',';
             if (((count($order->getProducts())-1) == $dt) && ($order->total_shipping == 0)) {
                 $separator = '';
@@ -241,7 +241,7 @@ class Mjifirma extends Module
          * Wysyłka
          */
         if ($order->total_shipping > 0) {
-        $pozycje .= '{'
+            $pozycje .= '{'
                     . '"StawkaVat":'.$tax_rate.','
                     . '"Ilosc": 1,'
                     . '"CenaJednostkowa":'.number_format($order->total_shipping, 2, '.', '').','
@@ -296,7 +296,7 @@ class Mjifirma extends Module
 
         $api_key = array();
         $part_key = '';
-        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura'));$i++) {
+        for ($i=0; $i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura')); $i++) {
             $part_key .= Configuration::get($this->prefix.'klucz_api_faktura')[$i];
             if ((($i%2) == 1) && ($i != 0)) {
                 $api_key[] = $part_key;
@@ -330,15 +330,15 @@ class Mjifirma extends Module
      * @param type $payment_name
      * @return boolean
      */
-   public static function getPaymentid($payment_name)
+    public static function getPaymentid($payment_name)
     {
-       $sql = "SELECT * FROM "._DB_PREFIX_."module WHERE name = '".pSQL($payment_name)."' LIMIT 1";
-       if (count(DB::getInstance()->ExecuteS($sql, 1, 0)) > 0) {
-           return DB::getInstance()->ExecuteS($sql, 1, 0)[0]['id_module'];
-       } else {
-           return false;
-       }
-   }
+        $sql = "SELECT * FROM "._DB_PREFIX_."module WHERE name = '".pSQL($payment_name)."' LIMIT 1";
+        if (count(DB::getInstance()->ExecuteS($sql, 1, 0)) > 0) {
+            return DB::getInstance()->ExecuteS($sql, 1, 0)[0]['id_module'];
+        } else {
+            return false;
+        }
+    }
     /**
      * Wyswietlanie opcji wysyłki faktur z szczegółów zamówienia
      * @return type
@@ -348,7 +348,7 @@ class Mjifirma extends Module
         $order_id = Tools::getValue('id_order');
         $order = new Order((int) $order_id);
 
-        if (empty(Configuration::get($this->prefix . 'klucz_api_faktura')) 
+        if (empty(Configuration::get($this->prefix . 'klucz_api_faktura'))
                 && empty(Configuration::get($this->prefix . 'klucz_api_rachunek'))
                 && empty(Configuration::get($this->prefix . 'klucz_api_abonament'))
                 && empty(Configuration::get($this->prefix . 'login'))
@@ -382,7 +382,7 @@ class Mjifirma extends Module
 
         $api_key = array();
         $part_key = '';
-        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura'));$i++) {
+        for ($i=0; $i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_faktura')); $i++) {
             $part_key .= Configuration::get($this->prefix.'klucz_api_faktura')[$i];
             if ((($i%2) == 1) && ($i != 0)) {
                 $api_key[] = $part_key;
@@ -430,7 +430,7 @@ class Mjifirma extends Module
         $payments = PaymentModule::getInstalledPaymentModules();
         //Zapisanie danych do konfiguracji połączenia
         if (Tools::isSubmit('saveApi')) {
-            if (!empty(Tools::getValue($this->prefix . 'klucz_api_faktura')) 
+            if (!empty(Tools::getValue($this->prefix . 'klucz_api_faktura'))
                 && !empty(Tools::getValue($this->prefix . 'klucz_api_rachunek'))
                 && !empty(Tools::getValue($this->prefix . 'klucz_api_abonament'))
                 && !empty(Tools::getValue($this->prefix . 'login'))
@@ -609,7 +609,7 @@ class Mjifirma extends Module
 
         $api_key = array();
         $part_key = '';
-        for ($i=0;$i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_abonament'));$i++) {
+        for ($i=0; $i<Tools::strlen(Configuration::get($this->prefix.'klucz_api_abonament')); $i++) {
             $part_key .= Configuration::get($this->prefix.'klucz_api_abonament')[$i];
             if ((($i%2) == 1) && ($i != 0)) {
                 $api_key[] = $part_key;
