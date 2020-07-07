@@ -321,7 +321,7 @@ class Mjifirma extends Module
             $this->dodajFakture($order->id, null, $response["response"]['Identyfikator'], 'fv');
         
             $link = new Link();
-            return $link->getLegacyAdminLink("AdminOrders",true,['vieworder'=>'','id_order'=>$order->id]);
+            return $link->getLegacyAdminLink("AdminOrders", true, ['vieworder' => '', 'id_order' => $order->id]);
         }
     }
 
@@ -374,7 +374,6 @@ class Mjifirma extends Module
      */
     public function getInvoiceApi($id_order)
     {
-        //https://www.ifirma.pl/iapi/fakturakraj/1244521.xml
         $nazwaUsera = Configuration::get($this->prefix.'login');
         $nazwaKlucza = 'faktura';
         $requestContent='';
