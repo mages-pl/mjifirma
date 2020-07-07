@@ -28,7 +28,7 @@ class Mjifirma extends Module
         $this->tab = 'billing_invoicing';
         $this->author = 'MAGES Michał Jendraszczyk';
         $this->version = '1.0.0';
-        $this->module_key = '62c288ebff06de6c404602a1809984ee';
+        $this->module_key = '8a6cef9c9d0543924539d90136de28a1';
 
         $this->prefix = $this->name . "_";
         $this->bootstrap = true;
