@@ -163,7 +163,7 @@ class Mjifirma extends Module
     public function hookActionValidateOrder($params)
     {
         $order = $params['order'];
-        $this->sendPv($order);
+        //$this->sendPv($order); removed because currently this method is unavailable
     }
 
     /**
