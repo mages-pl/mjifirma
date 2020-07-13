@@ -34,7 +34,7 @@ class Mjifirma extends Module
         $this->bootstrap = true;
         parent::__construct();
 
-        $this->displayName = $this->l('Integrtion with iFirima');
+        $this->displayName = $this->l('Integration with iFirima');
         $this->description = $this->l('Module which can send invoice from your store to ifirma.pl');
 
         $this->confirmUninstall = $this->l('Remove module?');
