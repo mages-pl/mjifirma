@@ -616,7 +616,7 @@ class Mjifirma extends Module
             }
         }
         
-        $klucz = chr(hexdec($api_key[0])).chr(hexdec($api_key[1])).chr(hexdec($api_key[2])).chr(hexdec($api_key[3])).chr(hexdec($api_key[4])).chr(hexdec($api_key[5])).chr(hexdec($api_key[6])).chr(hexdec($api_key[7]));
+        $klucz = @chr(hexdec($api_key[0])).@chr(hexdec($api_key[1])).@chr(hexdec($api_key[2])).@chr(hexdec($api_key[3])).@chr(hexdec($api_key[4])).@chr(hexdec($api_key[5])).@chr(hexdec($api_key[6])).@chr(hexdec($api_key[7]));
 
         $hashWiadomosci = hash_hmac('sha1', $url.$nazwaUsera.$nazwaKlucza.$requestContent, $klucz);
         $headers = array(
